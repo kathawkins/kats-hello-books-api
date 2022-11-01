@@ -22,7 +22,7 @@ def read_all_books():
         books = Book.query.filter_by(title=title_query)
     else:
         books = Book.query.all()
-        # books = Book.query.limit.all()
+        # books = Book.query.limit(5).all()
 
     books_response = []
     for book in books:
