@@ -28,27 +28,27 @@ def read_all_books():
         books_response.append(book.to_dict())
     return jsonify(books_response)
 
-def validate_book(book_id):
+def validate_model(cls, book_id):
     try:
-        book_id = int(book_id)
+        model_id = int(book_id)
     except:
-        abort(make_response({"message":f"book {book_id} invalid"}, 400))
+        abort(make_response({"message":f"{cls.__name__} {book_id} invalid"}, 400))
 
-    book = Book.query.get(book_id)
+    model = cls.query.get(model_id)
 
-    if not book:
-        abort(make_response({"message":f"book {book_id} not found"}, 404))
+    if not model:
+        abort(make_response({"message":f"{cls.__name__} {book_id} not found"}, 404))
 
-    return book
+    return model
 
 @books_bp.route("/<book_id>", methods=["GET"])
 def read_one_book(book_id):
-    book = validate_book(book_id)
+    book = validate_model(Book, book_id)
     return book.to_dict()
 
 @books_bp.route("/<book_id>", methods=["PUT"])
 def update_book(book_id):
-    book = validate_book(book_id)
+    book = validate_model(Book, book_id)
 
     request_body = request.get_json()
 
@@ -61,7 +61,7 @@ def update_book(book_id):
 
 @books_bp.route("/<book_id>", methods=["DELETE"])
 def delete_book(book_id):
-    book = validate_book(book_id)
+    book = validate_model(Book, book_id)
 
     db.session.delete(book)
     db.session.commit()
