@@ -7,7 +7,7 @@ books_bp = Blueprint("books", __name__, url_prefix="/books")
 @books_bp.route("", methods=["POST"])
 def create_book_record():
     request_body = request.get_json()
-    new_book = Book.from_dict(request_body)
+    new_book = Book.from_json(request_body)
 
     db.session.add(new_book)
     db.session.commit()
@@ -23,10 +23,11 @@ def read_all_books():
         books = Book.query.all()
         # books = Book.query.limit(5).all()
 
-    books_response = []
-    for book in books:
-        books_response.append(book.to_dict())
-    return jsonify(books_response)
+    # books_response = []
+    # for book in books:
+    #     books_response.append(book.to_dict())
+    # return jsonify(books_response)
+    return jsonify([book.to_dict() for book in books]) #DRY code
 
 def validate_model(cls, book_id):
     try:
@@ -52,8 +53,7 @@ def update_book(book_id):
 
     request_body = request.get_json()
 
-    book.title = request_body["title"]
-    book.description = request_body["description"]
+    book.update(request_body)
 
     db.session.commit()
 
