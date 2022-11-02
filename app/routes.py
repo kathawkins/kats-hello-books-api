@@ -1,9 +1,37 @@
 from app import db
 from app.models.book import Book
+from app.models.author import Author
 from flask import Blueprint, jsonify, abort, make_response, request
 
 books_bp = Blueprint("books", __name__, url_prefix="/books")
+authors_bp = Blueprint("authors", __name__, url_prefix="/authors")
 
+"""
+AUTHORS
+"""
+@authors_bp.route("", methods=["POST"])
+def create_author():
+    request_body = request.get_json()
+    new_author = Author.from_json(request_body)
+
+    db.session.add(new_author)
+    db.session.commit()
+
+    return make_response(jsonify(f"Book {new_author.name} successfully created"), 201)
+
+@authors_bp.route("", methods=["GET"])
+def read_all_authors():
+    name_query = request.args.get("name")
+    if name_query:
+        authors = Author.query.filter_by(title=name_query)
+    else:
+        authors = Author.query.all()
+
+    return jsonify([author.to_dict() for author in authors])
+
+"""
+BOOKS
+"""
 @books_bp.route("", methods=["POST"])
 def create_book_record():
     request_body = request.get_json()
@@ -21,13 +49,8 @@ def read_all_books():
         books = Book.query.filter_by(title=title_query)
     else:
         books = Book.query.all()
-        # books = Book.query.limit(5).all()
 
-    # books_response = []
-    # for book in books:
-    #     books_response.append(book.to_dict())
-    # return jsonify(books_response)
-    return jsonify([book.to_dict() for book in books]) #DRY code
+    return jsonify([book.to_dict() for book in books]) 
 
 def validate_model(cls, book_id):
     try:
