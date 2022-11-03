@@ -11,3 +11,9 @@ class Author(db.Model):
         author_as_dict["name"] = self.name
 
         return author_as_dict
+    
+    @classmethod
+    def from_json(cls, author_req_body):
+        new_author = Author(name=author_req_body["name"])
+
+        return new_author

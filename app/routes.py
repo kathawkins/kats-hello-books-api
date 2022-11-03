@@ -17,7 +17,7 @@ def create_author():
     db.session.add(new_author)
     db.session.commit()
 
-    return make_response(jsonify(f"Book {new_author.name} successfully created"), 201)
+    return make_response(jsonify(f"Author {new_author.name} successfully created"), 201)
 
 @authors_bp.route("", methods=["GET"])
 def read_all_authors():
@@ -28,6 +28,26 @@ def read_all_authors():
         authors = Author.query.all()
 
     return jsonify([author.to_dict() for author in authors])
+
+@authors_bp.route("/<author_id>/books", methods=["POST"])
+def create_book_with_author(author_id):
+    author = validate_model(Author, author_id)
+
+    request_body = request.get_json()
+    new_book = Book(title=request_body["title"],
+                    description=request_body["description"],
+                    author_id = author.id) #Learn lesson had author = author (???)
+    # new_book = Book.from_json(request_body)
+
+    db.session.add(new_book)
+    db.session.commit()
+
+    return make_response(jsonify(f"Book {new_book.title} by {new_book.author.name} successfully created"), 201)
+
+@authors_bp.route("/<author_id>/books", methods=["GET"])
+def read_books_from_author(author_id):
+    author = validate_model(Author, author_id)
+    return jsonify([book.to_dict() for book in author.books])
 
 """
 BOOKS
@@ -52,16 +72,16 @@ def read_all_books():
 
     return jsonify([book.to_dict() for book in books]) 
 
-def validate_model(cls, book_id):
+def validate_model(cls, id):
     try:
-        model_id = int(book_id)
+        model_id = int(id)
     except:
-        abort(make_response({"message":f"{cls.__name__} {book_id} invalid"}, 400))
+        abort(make_response({"message":f"{cls.__name__} {id} invalid"}, 400))
 
     model = cls.query.get(model_id)
 
     if not model:
-        abort(make_response({"message":f"{cls.__name__} {book_id} not found"}, 404))
+        abort(make_response({"message":f"{cls.__name__} {id} not found"}, 404))
 
     return model
 

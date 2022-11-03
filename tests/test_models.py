@@ -1,4 +1,5 @@
 from app.models.book import Book
+from app.models.author import Author
 import pytest
 
 def test_to_dict_no_missing_data():
@@ -58,7 +59,7 @@ def test_to_dict_missing_description():
     assert result["title"] == "Ocean Book"
     assert result["description"] is None
 
-def test_from_dict_returns_book():
+def test_from_json_returns_book():
     # Arrange
     book_data = {
         "title": "New Book",
@@ -66,13 +67,13 @@ def test_from_dict_returns_book():
     }
 
     # Act
-    new_book = Book.from_dict(book_data)
+    new_book = Book.from_json(book_data)
 
     # Assert
     assert new_book.title == "New Book"
     assert new_book.description == "The Best!"
 
-def test_from_dict_with_no_title():
+def test_from_json_with_no_title():
     # Arrange
     book_data = {
         "description": "The Best!"
@@ -80,9 +81,9 @@ def test_from_dict_with_no_title():
 
     # Act & Assert
     with pytest.raises(KeyError, match = 'title'):
-        new_book = Book.from_dict(book_data)
+        new_book = Book.from_json(book_data)
 
-def test_from_dict_with_no_description():
+def test_from_json_with_no_description():
     # Arrange
     book_data = {
         "title": "New Book"
@@ -90,9 +91,9 @@ def test_from_dict_with_no_description():
 
     # Act & Assert
     with pytest.raises(KeyError, match = 'description'):
-        new_book = Book.from_dict(book_data)
+        new_book = Book.from_json(book_data)
 
-def test_from_dict_with_extra_keys():
+def test_from_json_with_extra_keys():
     # Arrange
     book_data = {
         "extra": "some stuff",
@@ -102,7 +103,7 @@ def test_from_dict_with_extra_keys():
     }
     
     # Act
-    new_book = Book.from_dict(book_data)
+    new_book = Book.from_json(book_data)
 
     # Assert
     assert new_book.title == "New Book"

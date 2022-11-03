@@ -10,19 +10,30 @@ class Book(db.Model):
 
     def to_dict(self):
         book_as_dict = {}
-        book_as_dict["id"] = self.id
-        book_as_dict["title"] = self.title
-        book_as_dict["description"] = self.description
+        if not self.author_id:
+            book_as_dict["id"] = self.id
+            book_as_dict["title"] = self.title
+            book_as_dict["description"] = self.description
+        else:
+            book_as_dict["id"] = self.id
+            book_as_dict["title"] = self.title
+            book_as_dict["description"] = self.description
+            book_as_dict["author_id"] = self.author_id
 
         return book_as_dict
 
     @classmethod
     def from_json(cls, book_req_body):
-        new_book = Book(title=book_req_body["title"],
+        if "author_id" in book_req_body:
+            new_book = Book(title=book_req_body["title"],
+                        description=book_req_body["description"],
+                        author_id = book_req_body["author_id"])
+        else:
+            new_book = Book(title=book_req_body["title"],
                         description=book_req_body["description"])
-        # does the same as:
-        # new_book = cls(title=book_req_body["title"],
-        #             description=book_req_body["description"])
+            # does the same as:
+            # new_book = cls(title=book_req_body["title"],
+            #             description=book_req_body["description"])
         return new_book
 
     def update(self, req_body):
