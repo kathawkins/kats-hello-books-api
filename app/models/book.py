@@ -1,5 +1,6 @@
 from app import db
 from flask import abort, make_response
+from app.models.author import Author
 
 class Book(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -23,17 +24,15 @@ class Book(db.Model):
         return book_as_dict
 
     @classmethod
-    def from_json(cls, book_req_body):
+    def from_json(cls, book_req_body, author):
         if "author_id" in book_req_body:
             new_book = Book(title=book_req_body["title"],
                         description=book_req_body["description"],
                         author_id = book_req_body["author_id"])
         else:
             new_book = Book(title=book_req_body["title"],
-                        description=book_req_body["description"])
-            # does the same as:
-            # new_book = cls(title=book_req_body["title"],
-            #             description=book_req_body["description"])
+                        description=book_req_body["description"],
+                        author_id = author.id)
         return new_book
 
     def update(self, req_body):
