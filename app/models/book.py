@@ -24,15 +24,10 @@ class Book(db.Model):
         return book_as_dict
 
     @classmethod
-    def from_json(cls, book_req_body, author):
-        if "author_id" in book_req_body:
-            new_book = Book(title=book_req_body["title"],
+    def from_json(cls, book_req_body, author_query = None):
+        new_book = Book(title=book_req_body["title"],
                         description=book_req_body["description"],
-                        author_id = book_req_body["author_id"])
-        else:
-            new_book = Book(title=book_req_body["title"],
-                        description=book_req_body["description"],
-                        author_id = author.id)
+                        author = author_query) #or author_id = author_query.id?
         return new_book
 
     def update(self, req_body):

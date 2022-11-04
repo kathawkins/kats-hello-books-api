@@ -31,13 +31,13 @@ def read_all_authors():
 
 @authors_bp.route("/<author_id>/books", methods=["POST"])
 def create_book_with_author(author_id):
-    author = validate_model(Author, author_id)
+    author_query = validate_model(Author, author_id)
 
     request_body = request.get_json()
     # new_book = Book(title=request_body["title"],
     #                 description=request_body["description"],
-    #                 author_id = author.id) #Learn lesson had author = author (???)
-    new_book = Book.from_json(request_body, author)
+    #                 author_id = author.id) #Learn lesson had author = author_query (???)
+    new_book = Book.from_json(request_body, author_query)
 
     db.session.add(new_book)
     db.session.commit()
