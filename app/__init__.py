@@ -28,6 +28,7 @@ def create_app(test_config=None):
     from app.models.book import Book
     from app.models.author import Author
     from app.models.genre import Genre
+    from app.models.book_genre import BookGenre
 
     #register blueprints so that app uses the .route endpoints
     from .routes import books_bp, authors_bp, genres_bp
