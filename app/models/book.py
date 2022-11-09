@@ -12,15 +12,14 @@ class Book(db.Model):
 
     def to_dict(self):
         book_as_dict = {}
-        if not self.author_id:
-            book_as_dict["id"] = self.id
-            book_as_dict["title"] = self.title
-            book_as_dict["description"] = self.description
-        else:
-            book_as_dict["id"] = self.id
-            book_as_dict["title"] = self.title
-            book_as_dict["description"] = self.description
+        book_as_dict["id"] = self.id
+        book_as_dict["title"] = self.title
+        book_as_dict["description"] = self.description
+        if self.author:
             book_as_dict["author_id"] = self.author_id
+        if self.genres:
+            genre_names =[genre.name for genre in self.genres]
+            book_as_dict["genres"] = genre_names
 
         return book_as_dict
 
@@ -28,8 +27,17 @@ class Book(db.Model):
     def from_json(cls, book_req_body, author_query = None):
         new_book = Book(title=book_req_body["title"],
                         description=book_req_body["description"],
-                        author = author_query) #or author_id = author_query.id?
+                        author = author_query)
         return new_book
+
+    @classmethod
+    def from_json_with_author(cls, book_req_body,  genre_query = None):
+        new_book = Book(title=book_req_body["title"],
+                        description=book_req_body["description"],
+                        author_id = book_req_body["author_id"], 
+                        genres = [genre_query]) #why does this need to be in a list??
+        return new_book    
+    
 
     def update(self, req_body):
         try:

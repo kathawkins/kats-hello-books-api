@@ -32,6 +32,30 @@ def create_genre():
 
     return make_response(jsonify(f"Genre {new_genre.name} successfully created"), 201)
 
+@genres_bp.route("/<genre_id>/books", methods=["POST"])
+def create_book_with_genre(genre_id):
+    genre = validate_model(Genre, genre_id)
+
+    request_body = request.get_json()
+    new_book = Book.from_json_with_author(request_body, genre)
+    # new_book = Book(
+    #     title=request_body["title"],
+    #     description=request_body["description"],
+    #     author_id=request_body["author_id"],
+    #     genres=[genre]
+    # )
+
+    db.session.add(new_book)
+    db.session.commit()
+
+    return make_response(jsonify(f"Book {new_book.title} by {new_book.author.name} successfully created"), 201)
+
+@genres_bp.route("/<genre_id>/books", methods=["GET"])
+def read_all_books(genre_id):
+    genre = validate_model(Genre, genre_id)
+
+    return jsonify([book.to_dict() for book in genre.books])
+
 """
 AUTHORS
 """
